@@ -1,25 +1,80 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
+import SingleCard from './components/SingleCard';
+
+const cardImages = [
+  {'src': '/img/helmet-1.png, matched: false'},
+  {'src': '/img/potion-1.png, matched: false'},
+  {'src': '/img/ring-1.png, matched: false'},
+  {'src': '/img/scroll-1.png, matched: false'},
+  {'src': '/img/shield-1.png, matched: false'},
+  {'src': '/img/sword-1.png, matched: false'},
+]
+
+
 
 function App() {
+const [cards, setCards] = useState([]);
+const [turns,setTurns] = useState(0);
+const [choiceOne, setChoiceOne] = useState(null);
+const [choiceTwo, setChoiceTwo] = useState(null);
+
+
+
+  // shuffle Cards
+  const shuffleCards = () => {
+    const ShuffleCards = [...cardImages, ...cardImages]
+      .sort(()=> Math.random() - 0.5)
+      .map((card)=> ({...card, id: Math.random()}))
+      setCards(ShuffleCards);
+    }
+
+    // handle a choice
+    const handleChoice = (card) =>{
+      choiceOne ? setChoiceTwo(card) : setChoiceOne(card)
+    }
+    
+    
+    const resetTurn = () => {
+      setChoiceOne(null);
+      setChoiceTwo(null);
+      setTurns(prevTurns => prevTurns + 1)
+    }
+
+    //compare Pair
+    useEffect(()=>{
+      if(choiceOne && choiceTwo){
+        
+        if(choiceOne.src === choiceTwo.src){
+          setCards((cards)=>cards.map({
+            
+          }))
+          resetTurn();
+        }else{
+          console.log('Those cards Do Not Match')
+          resetTurn()
+        }
+      }
+    },[choiceOne,choiceTwo])
+    
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Magic Match</h1>
+      <button onClick={shuffleCards}>New Game</button>
+
+      <div className='card-grid'>
+        {cards.map(card => (
+          <SingleCard 
+          key={card.id} 
+          card={card} 
+          handleChoice={handleChoice}
+          />
+        ))}
+      </div>
+
     </div>
   );
 }
 
-export default App;
+export default App
